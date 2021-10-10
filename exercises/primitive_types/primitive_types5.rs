@@ -2,11 +2,12 @@
 // Destructure the `cat` tuple so that the println will work.
 // Execute `rustlings hint primitive_types5` for hints!
 
-// I AM NOT DONE
 
 fn main() {
     let cat = ("Furry McFurson", 3.5);
-    let /* your pattern here */ = cat;
+    let (name, age) = cat;
+    // let name : &str = cat.0;
+    // let age : f32 = cat.1;
 
     println!("{} is {} years old.", name, age);
 }
