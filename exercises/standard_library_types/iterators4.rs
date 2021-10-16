@@ -1,6 +1,5 @@
 // iterators4.rs
 
-// I AM NOT DONE
 
 pub fn factorial(num: u64) -> u64 {
     // Complete this function to return the factorial of num
@@ -12,6 +11,13 @@ pub fn factorial(num: u64) -> u64 {
     // For an extra challenge, don't use:
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
+
+    // ref: https://stackoverflow.com/questions/60835646/how-do-i-create-a-non-recursive-calculation-of-factorial-using-iterators-and-ran
+    // 基于`iter.fold(base, |acc, element| ...)`
+    match num {
+        0 => 1,
+        1.. => (1..num+1).fold(1, |acc, v| acc * v)
+    }
 }
 
 #[cfg(test)]
