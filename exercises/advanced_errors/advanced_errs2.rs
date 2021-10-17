@@ -16,7 +16,6 @@
 // 4. Complete the partial implementation of `Display` for
 //    `ParseClimateError`.
 
-// I AM NOT DONE
 
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
@@ -47,11 +46,20 @@ impl From<ParseIntError> for ParseClimateError {
 impl From<ParseFloatError> for ParseClimateError {
     fn from(e: ParseFloatError) -> Self {
         // TODO: Complete this function
+        Self::ParseFloat(e)
     }
 }
 
 // TODO: Implement a missing trait so that `main()` below will compile. It
 // is not necessary to implement any methods inside the missing trait.
+// ref: https://rustwiki.org/zh-CN/rust-by-example/error/multiple_error_types.html
+impl Error for ParseClimateError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        // 泛型错误，没有记录其内部原因。
+        None
+    }
+}
+
 
 // The `Display` trait allows for other code to obtain the error formatted
 // as a user-visible string.
@@ -62,8 +70,11 @@ impl Display for ParseClimateError {
         // Imports the variants to make the following code more compact.
         use ParseClimateError::*;
         match self {
+            Empty => write!(f, "empty input"),
+            BadLen => write!(f, "incorrect number of fields"),
             NoCity => write!(f, "no city name"),
             ParseFloat(e) => write!(f, "error parsing temperature: {}", e),
+            ParseInt(e) => write!(f, "error parsing year: {}", e),
             _ => write!(f, "unhandled error!"),
         }
     }
@@ -92,8 +103,14 @@ impl FromStr for Climate {
         let v: Vec<_> = s.split(',').collect();
         let (city, year, temp) = match &v[..] {
             [city, year, temp] => (city.to_string(), year, temp),
+            [nchr] => return Err(ParseClimateError::Empty),
             _ => return Err(ParseClimateError::BadLen),
         };
+
+        if let 0 = city.len() {
+            return Err(ParseClimateError::NoCity);
+        }
+
         let year: u32 = year.parse()?;
         let temp: f32 = temp.parse()?;
         Ok(Climate { city, year, temp })
@@ -197,7 +214,7 @@ mod test {
         assert!(matches!(res, Err(ParseClimateError::ParseInt(_))));
         let err = res.unwrap_err();
         let inner: Option<&(dyn Error + 'static)> = err.source();
-        assert!(inner.is_some());
+        assert!(inner.is_some());   // paniced here
         assert!(inner.unwrap().is::<ParseIntError>());
     }
 }
