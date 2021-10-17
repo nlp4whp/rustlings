@@ -33,10 +33,27 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
 impl From<&str> for Person {
+    // ref: https://github.com/gma2th/rustlings-solutions/blob/3.0.0-solutions/exercises/conversions/from_into.rs
     fn from(s: &str) -> Person {
+        // let let s_split: Vec<&str> = s.split(',').collect();
+        match s.split(",").collect::< Vec<&str> >() {
+            val if val.len() == 2 => {
+                let _name: String = val[0].to_string();
+                match _name.len() {
+                    0 => Person::default(),
+                    _ => {
+                        match val[1].parse::<usize>() {
+                            Ok(_age) => Person {name: _name, age: _age},
+                            _ => Person::default()
+                        }
+                    }
+                }
+            }
+            _ => Person::default()
+        }
+
     }
 }
 
